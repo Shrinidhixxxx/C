@@ -618,10 +618,7 @@ class KAGEngine:
                 "type": node_data.get("type", "unknown"),
                 "pagerank_score": score
             })
-        return most_central """
-KAG Engine - Knowledge Graph Augmented Generation
-NetworkX-based knowledge graph for Chennai civic services
-"""
+        return most_central 
 
 import networkx as nx
 import json
