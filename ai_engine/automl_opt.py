@@ -72,34 +72,43 @@ class AutoMLOptimizer:
             "regularization": 0.001              # L2 regularization strength
         }
     
-    def optimize_response(self, response_data: Dict[str, Any], query: str) -> str:
-        """Optimize response based on current parameters and query context"""
-        
-        self.response_count += 1
-        
-        # Extract response components
-        original_response = response_data.get("response", "")
-        
-        # Apply current optimization parameters
-        optimized_response = self._apply_optimization_rules(original_response, query, response_data)
-        
-        # Evaluate response quality
-        quality_score = self._evaluate_response_quality(optimized_response, query, response_data)
-        
-        # Store evaluation for optimization
-        self.response_evaluations.append({
-            "query": query,
-            "response": optimized_response,
-            "quality_score": quality_score,
-            "parameters_used": self.current_params.copy(),
-            "timestamp": datetime.now()
-        })
-        
-        # Trigger optimization if needed
-        if self.response_count % self.optimization_frequency == 0:
-            self._trigger_hyperparameter_optimization()
-        
-        return optimized_response
+    def optimize_response(self, response_data: Any, query: str) -> str:
+    \"\"\"Optimize civic response based on parameters and query context\"\"\"
+    
+    self.response_count += 1
+    
+    # Normalize response_data to dict if passed as string
+    if isinstance(response_data, str):
+        response_data = {"response": response_data}
+    
+    # Safely extract original response text
+    original_response = response_data.get("response", "")
+    
+    # Apply optimization rules (e.g., length, content, emergency priority)
+    optimized_response = self._apply_optimization_rules(
+        original_response, query, response_data
+    )
+    
+    # Evaluate quality of optimized response for tuning
+    quality_score = self._evaluate_response_quality(
+        optimized_response, query, response_data
+    )
+    
+    # Record evaluation with timestamp and used parameters for future optimization
+    self.response_evaluations.append({
+        "query": query,
+        "response": optimized_response,
+        "quality_score": quality_score,
+        "parameters_used": self.current_params.copy(),
+        "timestamp": datetime.now()
+    })
+    
+    # Trigger AutoML tuning periodically based on optimization frequency threshold
+    if self.response_count % self.optimization_frequency == 0:
+        self._trigger_hyperparameter_optimization()
+    
+    return optimized_response
+
     
     def _apply_optimization_rules(self, response: str, query: str, response_data: Dict[str, Any]) -> str:
         """Apply optimization rules to improve response quality"""
