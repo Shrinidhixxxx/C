@@ -78,8 +78,11 @@ class AutoMLOptimizer:
         self.response_count += 1
         if response_data is None:
             response_data = {"response": ""}
-        elif isinstance(response_data, str):
-            response_data = {"response": response_data}
+        else:
+            try:
+                original_response = response_data.get("response", "")
+            except AttributeError:
+                response_data = {"response": str(response_data)}
         
         # Extract response components
         original_response = response_data.get("response", "")
