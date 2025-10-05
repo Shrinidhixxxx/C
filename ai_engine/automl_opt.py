@@ -76,6 +76,10 @@ class AutoMLOptimizer:
         """Optimize response based on current parameters and query context"""
         
         self.response_count += 1
+        if response_data is None:
+            response_data = {"response": ""}
+        elif isinstance(response_data, str):
+            response_data = {"response": response_data}
         
         # Extract response components
         original_response = response_data.get("response", "")
